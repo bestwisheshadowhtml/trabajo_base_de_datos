@@ -6,12 +6,6 @@ GO
 USE BancoSimulacion;
 GO
 
-
-
--- =========================================
--- 1. TABLAS BASE (Sin dependencias)
--- =========================================
-
 CREATE TABLE Cliente
 (
     id_cliente INT IDENTITY(1,1) PRIMARY KEY,
@@ -41,13 +35,10 @@ CREATE TABLE Sucursal
 CREATE TABLE Tipo_Transaccion
 (
     id_tipo_transaccion INT IDENTITY(1,1) PRIMARY KEY,
-    nombre_tipo VARCHAR(50) NOT NULL, -- Ej: Depósito, Giro, Transferencia, Cobro Comisión
-    signo INT NOT NULL                -- 1 para ingresos, -1 para egresos
+    nombre_tipo VARCHAR(50) NOT NULL, 
+    signo INT NOT NULL                
 );
 
--- =========================================
--- 2. TABLAS CON DEPENDENCIA DIRECTA (Nivel 1)
--- =========================================
 
 CREATE TABLE Usuario
 (
@@ -102,9 +93,7 @@ CREATE TABLE Prestamo
     REFERENCES Cliente(id_cliente)
 );
 
--- =========================================
--- 3. TABLA CUENTA (Núcleo del sistema)
--- =========================================
+
 
 CREATE TABLE Cuenta
 (
@@ -112,9 +101,8 @@ CREATE TABLE Cuenta
     numero_cuenta VARCHAR(20) UNIQUE NOT NULL,
     saldo DECIMAL(10,2) NOT NULL,
     fecha_creacion DATE NOT NULL,
-    estado VARCHAR(20) DEFAULT 'Activa', -- Nuevo: Activa, Congelada, Cerrada
-    moneda VARCHAR(3) DEFAULT 'CLP',     -- Nuevo: Tipo de moneda
-
+    estado VARCHAR(20) DEFAULT 'Activa', 
+    moneda VARCHAR(3) DEFAULT 'CLP',     
     id_cliente INT NOT NULL,
     id_tipo_cuenta INT NOT NULL,
     id_sucursal INT NOT NULL,
@@ -129,9 +117,7 @@ CREATE TABLE Cuenta
     REFERENCES Sucursal(id_sucursal)
 );
 
--- =========================================
--- 4. TABLAS CON DEPENDENCIA DE CUENTA O PRÉSTAMO (Nivel 2)
--- =========================================
+
 
 CREATE TABLE Transaccion
 (
@@ -141,7 +127,7 @@ CREATE TABLE Transaccion
     descripcion VARCHAR(100),
 
     id_cuenta INT NOT NULL,
-    id_tipo_transaccion INT NOT NULL, -- Reemplaza a tipo_movimiento
+    id_tipo_transaccion INT NOT NULL, 
 
     FOREIGN KEY(id_cuenta)
     REFERENCES Cuenta(id_cuenta),
@@ -172,9 +158,9 @@ CREATE TABLE Tarjeta
     numero_tarjeta VARCHAR(20) UNIQUE NOT NULL,
     tipo_tarjeta VARCHAR(30),
     fecha_vencimiento DATE NOT NULL,
-    cvv VARCHAR(4) NOT NULL,               -- Nuevo
-    estado VARCHAR(20) DEFAULT 'Activa',   -- Nuevo
-    limite_credito DECIMAL(10,2),          -- Nuevo (NULL para débito)
+    cvv VARCHAR(4) NOT NULL,              
+    estado VARCHAR(20) DEFAULT 'Activa',   
+    limite_credito DECIMAL(10,2),          
 
     id_cuenta INT NOT NULL,
 
@@ -197,9 +183,7 @@ CREATE TABLE Cuota_Prestamo
     REFERENCES Prestamo(id_prestamo)
 );
 
--- =========================================
--- 5. TABLAS CON DEPENDENCIA DE CUOTA (Nivel 3)
--- =========================================
+
 
 CREATE TABLE Pago_Prestamo
 (
@@ -208,8 +192,7 @@ CREATE TABLE Pago_Prestamo
     monto_pago DECIMAL(10,2) NOT NULL,
 
     id_prestamo INT NOT NULL,
-    id_cuota INT NOT NULL, -- Relaciona el pago con la cuota exacta
-
+    id_cuota INT NOT NULL, 
     FOREIGN KEY(id_prestamo)
     REFERENCES Prestamo(id_prestamo),
 
